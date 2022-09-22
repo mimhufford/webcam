@@ -1,0 +1,4 @@
+opencv/
+*.exe
+*.obj
+*.dll
