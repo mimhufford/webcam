@@ -1,1 +1,8 @@
-cl /nologo /I opencv\build\include\ /EHsc webcam.cpp /link /LIBPATH opencv\build\x64\vc15\lib\opencv_world460.lib
+cl main.cpp escapi.cpp ^
+   /nologo ^
+   /I include ^
+   /link ^
+   /LIBPATH:lib SDL2.lib SDL2main.lib shell32.lib ^
+   /SUBSYSTEM:WINDOWS
+
+main

@@ -2,3 +2,5 @@ opencv/
 *.exe
 *.obj
 *.dll
+/lib
+/include
