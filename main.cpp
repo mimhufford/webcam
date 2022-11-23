@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)                        quit = true;
+            else if (event.type == SDL_MOUSEWHEEL)            size += event.wheel.y * 0.1f;
             else if (event.type == SDL_KEYUP)
             {
                 if (event.key.keysym.sym == SDLK_ESCAPE)       quit = true;
