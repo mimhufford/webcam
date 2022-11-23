@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
 
     int width = 640;
     int height = 480;
+    float targetSize = 1.0f;
     float size = 1.0f;
 
     SimpleCapParams capture;
@@ -35,15 +36,17 @@ int main(int argc, char *argv[])
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT)                        quit = true;
-            else if (event.type == SDL_MOUSEWHEEL)            size += event.wheel.y * 0.1f;
-            else if (event.type == SDL_KEYUP)
-            {
-                if (event.key.keysym.sym == SDLK_ESCAPE)       quit = true;
-                else if (event.key.keysym.sym == SDLK_MINUS)  size -= 0.1f;
-                else if (event.key.keysym.sym == SDLK_EQUALS) size += 0.1f;
-            }
+            if (event.type == SDL_QUIT)                   quit = true;
+            else if (event.type == SDL_MOUSEWHEEL)        targetSize += event.wheel.y * 0.1f;
+            else if (event.type != SDL_KEYUP)             continue;
+            if (event.key.keysym.sym == SDLK_ESCAPE)      quit = true;
+            else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
+            else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
         }
+        
+        // Clamp target size and lerp size towards target
+        if (targetSize < 0.1f) targetSize = 0.1f;
+        size = size + 0.2f * (targetSize - size);
 
         // Handle drag to move
         auto scaledWidth = width * size;
