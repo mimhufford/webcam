@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     doCapture(0);
 
     // Setup window
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     auto window   = SDL_CreateWindow("Webcam", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP);
     auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     auto texture  = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, width, height);
