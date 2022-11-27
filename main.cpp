@@ -14,8 +14,15 @@ int main(int argc, char *argv[])
     int width = 640;
     int height = 480;
     float targetSize = 1.0f;
+    float posX = 320;
+    float posY = 240;
+    float targetX = 320;
+    float targetY = 240;
     float size = 1.0f;
     int timeLastFrame = SDL_GetTicks();
+    bool dvdMode = false;
+    float dvdDx = 1.0f;
+    float dvdDy = -1.0f;
 
     SimpleCapParams capture;
     capture.mWidth = width;
@@ -49,24 +56,49 @@ int main(int argc, char *argv[])
             if (event.key.keysym.sym == SDLK_ESCAPE)      quit = true;
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
+            else if (event.key.keysym.sym == SDLK_d)      dvdMode = !dvdMode;
         }
-        
-        // Clamp target size and lerp size towards target
-        if (targetSize < 0.1f) targetSize = 0.1f;
-        size = size + dt * 20 * (targetSize - size);
 
-        // Handle drag to move
+        // Handle mouse window move and resize
         auto scaledWidth = width * size;
         auto scaledHeight = height * size;
-        int x, y;
-        auto mouse = SDL_GetGlobalMouseState(&x, &y);
+        int mx, my;
+        auto mouse = SDL_GetGlobalMouseState(&mx, &my);
         auto flags = SDL_GetWindowFlags(window);
-        if (flags & SDL_WINDOW_INPUT_FOCUS && mouse & 4) SDL_SetWindowPosition(window, x - scaledWidth / 2, y - scaledHeight / 2);
+        if (flags & SDL_WINDOW_INPUT_FOCUS && mouse & 4)
+        {
+            targetX = posX = mx - scaledWidth / 2;
+            targetY = posY = my - scaledHeight / 2;
+            SDL_SetWindowPosition(window, targetX, targetY);
+        }
+        
+        // Handle DVD mode
+        if (dvdMode)
+        {
+            SDL_DisplayMode dm;
+            SDL_GetDesktopDisplayMode(0, &dm);
+            float dx = dt * dvdDx * 100;
+            float dy = dt * dvdDy * 100;
+            if (posX < 0) dvdDx = 1;
+            if (posY < 0) dvdDy = 1;
+            if (posX > dm.w - scaledWidth)  dvdDx = -1;
+            if (posY > dm.h - scaledHeight) dvdDy = -1;
+            targetX += dx;
+            targetY += dy;
+        }
 
+        // Clamp and lerp towards target size
+        if (targetSize < 0.1f) targetSize = 0.1f;
+        size = size + dt * 20 * (targetSize - size);
         SDL_SetWindowSize(window, scaledWidth, scaledHeight);
+        
+        // Lerp towards target position
+        posX = posX + dt * 20 * (targetX - posX);
+        posY = posY + dt * 20 * (targetY - posY);
+        SDL_SetWindowPosition(window, posX, posY);
 
         // Don't hog all CPU time
-        SDL_Delay(10);
+        SDL_Delay(1);
 
         // Render webcam texture
         SDL_RenderCopy(renderer, texture, 0, 0);
