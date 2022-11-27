@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     int height = 480;
     float targetSize = 1.0f;
     float size = 1.0f;
+    int timeLastFrame = SDL_GetTicks();
 
     SimpleCapParams capture;
     capture.mWidth = width;
@@ -33,6 +34,12 @@ int main(int argc, char *argv[])
 
     for(bool quit = false; !quit;)
     {
+        // Update dt
+        int timeNow = SDL_GetTicks();
+        float dt = (timeNow - timeLastFrame) / 1000.0f;
+        timeLastFrame = timeNow;
+
+        // Process events
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -46,7 +53,7 @@ int main(int argc, char *argv[])
         
         // Clamp target size and lerp size towards target
         if (targetSize < 0.1f) targetSize = 0.1f;
-        size = size + 0.2f * (targetSize - size);
+        size = size + dt * 20 * (targetSize - size);
 
         // Handle drag to move
         auto scaledWidth = width * size;
