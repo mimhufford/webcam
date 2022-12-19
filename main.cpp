@@ -20,6 +20,9 @@ int main(int argc, char *argv[])
     float targetY = posY;
     int timeLastFrame = SDL_GetTicks();
     bool dvdMode = false;
+    float dvdBeforeX;
+    float dvdBeforeY;
+    float dvdBeforeSize;
     float dvdDx = 1.0f;
     float dvdDy = -1.0f;
 
@@ -55,7 +58,23 @@ int main(int argc, char *argv[])
             if (event.key.keysym.sym == SDLK_ESCAPE)      quit = true;
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
-            else if (event.key.keysym.sym == SDLK_d)      dvdMode = !dvdMode;
+            else if (event.key.keysym.sym == SDLK_d)
+            {
+                if (dvdMode)
+                {
+                    targetX = dvdBeforeX;
+                    targetY = dvdBeforeY;
+                    targetSize = dvdBeforeSize;
+                    dvdMode = false;
+                }
+                else
+                {
+                    dvdBeforeX = targetX;
+                    dvdBeforeY = targetY;
+                    dvdBeforeSize = targetSize;
+                    dvdMode = true;
+                }
+            }
         }
 
         // Handle mouse window move and resize
