@@ -3,7 +3,6 @@
 
 // TODO
 //   Use offset so dragging doesn't cause initial snap
-//   Start in top right, with smaller size
 //   Arrows to snap to edges
 
 int main(int argc, char *argv[])
@@ -11,14 +10,14 @@ int main(int argc, char *argv[])
     if (setupESCAPI() < 1)             { SDL_Log("Unable to init ESCAPI\n"); return -1; }
     if (SDL_Init(SDL_INIT_VIDEO) != 0) { SDL_Log("Unable to init SDL\n");    return -1; }
 
-    int width = 640;
-    int height = 480;
+    int width = 320;
+    int height = 240;
+    float size = 1.0f;
     float targetSize = 1.0f;
     float posX = 320;
     float posY = 240;
-    float targetX = 320;
-    float targetY = 240;
-    float size = 1.0f;
+    float targetX = 1920 - width - 10;
+    float targetY = 10;
     int timeLastFrame = SDL_GetTicks();
     bool dvdMode = false;
     float dvdDx = 1.0f;
