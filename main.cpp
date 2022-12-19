@@ -13,11 +13,11 @@ int main(int argc, char *argv[])
     int width = 320;
     int height = 240;
     float size = 1.0f;
-    float targetSize = 1.0f;
-    float posX = 320;
-    float posY = 240;
-    float targetX = 1920 - width - 10;
-    float targetY = 10;
+    float targetSize = size;
+    float posX = 1920 - width - 10;
+    float posY = 10;
+    float targetX = posX;
+    float targetY = posY;
     int timeLastFrame = SDL_GetTicks();
     bool dvdMode = false;
     float dvdDx = 1.0f;
