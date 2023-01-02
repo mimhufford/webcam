@@ -14,8 +14,10 @@ int main(int argc, char *argv[])
     int height = 240;
     float size = 1.0f;
     float targetSize = size;
-    float posX = 1920 - width - 10;
-    float posY = 10;
+    const float START_X = 1920 - width - 10;
+    const float START_Y = 10;
+    float posX = START_X;
+    float posY = START_Y;
     float targetX = posX;
     float targetY = posY;
     int timeLastFrame = SDL_GetTicks();
@@ -25,6 +27,14 @@ int main(int argc, char *argv[])
     float dvdBeforeSize;
     float dvdDx = 1.0f;
     float dvdDy = -1.0f;
+
+    auto reset = [&]()
+    {
+        targetX = START_X;
+        targetY = START_Y;
+        targetSize = 1;
+        dvdMode = false;
+    };
 
     SimpleCapParams capture;
     capture.mWidth = width;
@@ -58,6 +68,7 @@ int main(int argc, char *argv[])
             if (event.key.keysym.sym == SDLK_ESCAPE)      quit = true;
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
+            else if (event.key.keysym.sym == SDLK_r)      reset();
             else if (event.key.keysym.sym == SDLK_d)
             {
                 if (dvdMode)
