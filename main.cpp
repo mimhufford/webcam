@@ -36,6 +36,14 @@ int main(int argc, char *argv[])
         dvdMode = false;
     };
 
+    auto centre = [&]()
+    {
+        targetSize = 2;
+        targetX = 1920 / 2 - targetSize * width / 2;
+        targetY = 1080 / 2 - targetSize * height / 2;
+        dvdMode = false;
+    };
+
     SimpleCapParams capture;
     capture.mWidth = width;
     capture.mHeight = height;
@@ -69,6 +77,7 @@ int main(int argc, char *argv[])
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
             else if (event.key.keysym.sym == SDLK_r)      reset();
+            else if (event.key.keysym.sym == SDLK_c)      centre();
             else if (event.key.keysym.sym == SDLK_d)
             {
                 if (dvdMode)
