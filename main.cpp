@@ -3,7 +3,6 @@
 
 // TODO
 //   Use offset so dragging doesn't cause initial snap
-//   Arrows to snap to edges
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +75,10 @@ int main(int argc, char *argv[])
             if (event.key.keysym.sym == SDLK_ESCAPE)      quit = true;
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
+            else if (event.key.keysym.sym == SDLK_LEFT)   targetX = 10;
+            else if (event.key.keysym.sym == SDLK_RIGHT)  targetX = 1920 - width * targetSize - 10;
+            else if (event.key.keysym.sym == SDLK_UP)     targetY = 10;
+            else if (event.key.keysym.sym == SDLK_DOWN)   targetY = 1080 - height * targetSize - 10;
             else if (event.key.keysym.sym == SDLK_r)      reset();
             else if (event.key.keysym.sym == SDLK_c)      centre();
             else if (event.key.keysym.sym == SDLK_d)
