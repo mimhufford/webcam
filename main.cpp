@@ -1,9 +1,6 @@
 #include <SDL.h>
 #include "escapi.h"
 
-// TODO
-//   Use offset so dragging doesn't cause initial snap
-
 int main(int argc, char *argv[])
 {
     if (setupESCAPI() < 1)             { SDL_Log("Unable to init ESCAPI\n"); return -1; }
@@ -19,6 +16,9 @@ int main(int argc, char *argv[])
     float posY = START_Y;
     float targetX = posX;
     float targetY = posY;
+    bool dragging = false;
+    float offsetX = 0;
+    float offsetY = 0;
     int timeLastFrame = SDL_GetTicks();
     bool dvdMode = false;
     float dvdBeforeX;
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        // Handle mouse window move and resize
+        // Handle right click window dragging
         auto scaledWidth = width * size;
         auto scaledHeight = height * size;
         int mx, my;
@@ -108,9 +108,19 @@ int main(int argc, char *argv[])
         auto flags = SDL_GetWindowFlags(window);
         if (flags & SDL_WINDOW_INPUT_FOCUS && mouse & 4)
         {
-            targetX = posX = mx - scaledWidth / 2;
-            targetY = posY = my - scaledHeight / 2;
+            if (!dragging)
+            {
+                offsetX = mx - scaledWidth/2 - posX;
+                offsetY = my - scaledHeight/2 - posY;
+                dragging = true;
+            }
+            targetX = posX = mx - scaledWidth/2 - offsetX;
+            targetY = posY = my - scaledHeight/2 - offsetY;
             SDL_SetWindowPosition(window, targetX, targetY);
+        }
+        else
+        {
+            dragging = false;
         }
         
         // Handle DVD mode
