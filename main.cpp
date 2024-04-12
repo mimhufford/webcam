@@ -6,11 +6,14 @@ int main(int argc, char *argv[])
     if (setupESCAPI() < 1)             { SDL_Log("Unable to init ESCAPI\n"); return -1; }
     if (SDL_Init(SDL_INIT_VIDEO) != 0) { SDL_Log("Unable to init SDL\n");    return -1; }
 
+    const float SCREEN_SCALING = 1.25;
+    const int SCREEN_WIDTH = 2560 / SCREEN_SCALING;
+    const int SCREEN_HEIGHT = 1440 / SCREEN_SCALING;
     int width = 320;
     int height = 240;
     float size = 1.0f;
     float targetSize = size;
-    const float START_X = 1920 - width - 10;
+    const float START_X = SCREEN_WIDTH - width - 10;
     const float START_Y = 10;
     float posX = START_X;
     float posY = START_Y;
@@ -38,8 +41,8 @@ int main(int argc, char *argv[])
     auto centre = [&]()
     {
         targetSize = 2;
-        targetX = 1920 / 2 - targetSize * width / 2;
-        targetY = 1080 / 2 - targetSize * height / 2;
+        targetX = SCREEN_WIDTH / 2 - targetSize * width / 2;
+        targetY = SCREEN_HEIGHT / 2 - targetSize * height / 2;
         dvdMode = false;
     };
 
@@ -76,9 +79,9 @@ int main(int argc, char *argv[])
             else if (event.key.keysym.sym == SDLK_EQUALS) targetSize += 0.1f;
             else if (event.key.keysym.sym == SDLK_MINUS)  targetSize -= 0.1f;
             else if (event.key.keysym.sym == SDLK_LEFT)   targetX = 10;
-            else if (event.key.keysym.sym == SDLK_RIGHT)  targetX = 1920 - width * targetSize - 10;
+            else if (event.key.keysym.sym == SDLK_RIGHT)  targetX = SCREEN_WIDTH - width * targetSize - 10;
             else if (event.key.keysym.sym == SDLK_UP)     targetY = 10;
-            else if (event.key.keysym.sym == SDLK_DOWN)   targetY = 1080 - height * targetSize - 10;
+            else if (event.key.keysym.sym == SDLK_DOWN)   targetY = SCREEN_HEIGHT - height * targetSize - 10;
             else if (event.key.keysym.sym == SDLK_r)      reset();
             else if (event.key.keysym.sym == SDLK_c)      centre();
             else if (event.key.keysym.sym == SDLK_d)
