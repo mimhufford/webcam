@@ -1,4 +1,6 @@
 #include <SDL.h>
+#include <SDL_syswm.h>
+#include <Windows.h>
 #include "escapi.h"
 
 int main(int argc, char *argv[])
@@ -56,10 +58,24 @@ int main(int argc, char *argv[])
     doCapture(0);
 
     // Setup window
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     auto window   = SDL_CreateWindow("Webcam", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP);
     auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     auto texture  = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, width, height);
+
+    // Add window transparency (Magenta will be see-through)
+    {
+        // Get window handle (https://stackoverflow.com/a/24118145/3357935)
+        SDL_SysWMinfo wmInfo;
+        SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
+        SDL_GetWindowWMInfo(window, &wmInfo);
+        HWND hWnd = wmInfo.info.win.window;
+
+        // Change window type to layered (https://stackoverflow.com/a/3970218/3357935)
+        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+
+        // Set transparency color
+        SetLayeredWindowAttributes(hWnd, RGB(255, 0, 255), 0, LWA_COLORKEY);
+    }
 
     for(bool quit = false; !quit;)
     {
@@ -160,6 +176,20 @@ int main(int argc, char *argv[])
         // Poll webcam
         if (isCaptureDone(0))
         {
+            // Mask out a circle
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    // @TODO: this is offset to the left
+                    //        work out the aspect ratio stuff properly
+                    float u = (float)x / height - 0.5f;
+                    float v = (float)y / height - 0.5f;
+                    float d = sqrtf(u*u + v*v);
+                    if (d > 0.5f) capture.mTargetBuf[y*width + x] = 0xFFFF00FF;
+                }
+            }
+
             SDL_UpdateTexture(texture, 0, capture.mTargetBuf, capture.mWidth * 4);
             doCapture(0);
         }
