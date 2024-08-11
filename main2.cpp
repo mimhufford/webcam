@@ -46,6 +46,7 @@ void main()
     image.mipmaps = 1;
 
     Texture2D texture = LoadTextureFromImage(image);
+    SetTextureFilter(texture, TEXTURE_FILTER_BILINEAR);
 
     while (!WindowShouldClose())
     {
