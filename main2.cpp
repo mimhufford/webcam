@@ -44,6 +44,13 @@ void main()
 
     while (!WindowShouldClose())
     {
+        Vector2 position = GetWindowPosition();
+        if (IsKeyPressed(KEY_LEFT))  position.x = 0;
+        if (IsKeyPressed(KEY_RIGHT)) position.x = GetMonitorWidth(0) - GetRenderWidth();
+        if (IsKeyPressed(KEY_UP))    position.y = 0;
+        if (IsKeyPressed(KEY_DOWN))  position.y = GetMonitorHeight(0) - GetRenderHeight();
+        SetWindowPosition(position.x, position.y);
+        
         float fSize = (float)GetScreenWidth();
         SetShaderValue(shader, sizeLoc, &fSize, SHADER_UNIFORM_FLOAT);
 
