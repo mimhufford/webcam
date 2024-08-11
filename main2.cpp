@@ -1,8 +1,10 @@
 #include "escapi.h"
 #include "raylib.h"
+#include "raymath.h"
 
 void main()
 {
+    Vector2 targetPosition;
     int width = 640;
     int height = 480;
 
@@ -44,12 +46,13 @@ void main()
 
     while (!WindowShouldClose())
     {
-        Vector2 position = GetWindowPosition();
-        if (IsKeyPressed(KEY_LEFT))  position.x = 0;
-        if (IsKeyPressed(KEY_RIGHT)) position.x = GetMonitorWidth(0) - GetRenderWidth();
-        if (IsKeyPressed(KEY_UP))    position.y = 0;
-        if (IsKeyPressed(KEY_DOWN))  position.y = GetMonitorHeight(0) - GetRenderHeight();
-        SetWindowPosition(position.x, position.y);
+        if (IsKeyPressed(KEY_LEFT))  targetPosition.x = 0;
+        if (IsKeyPressed(KEY_RIGHT)) targetPosition.x = GetMonitorWidth(0) - GetRenderWidth();
+        if (IsKeyPressed(KEY_UP))    targetPosition.y = 0;
+        if (IsKeyPressed(KEY_DOWN))  targetPosition.y = GetMonitorHeight(0) - GetRenderHeight();
+        Vector2 currentPosition = GetWindowPosition();
+        currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
+        SetWindowPosition(currentPosition.x, currentPosition.y);
         
         float fSize = (float)GetScreenWidth();
         SetShaderValue(shader, sizeLoc, &fSize, SHADER_UNIFORM_FLOAT);
