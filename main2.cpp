@@ -52,7 +52,6 @@ void main()
         BeginShaderMode(shader);
         DrawTexture(texture, 0, 0, WHITE);
         EndShaderMode();
-        DrawFPS(30, 30);
         EndDrawing();
 
         // Poll webcam
