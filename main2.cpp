@@ -57,8 +57,7 @@ void main()
         currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
         SetWindowPosition(currentPosition.x, currentPosition.y);
 
-        if (IsKeyPressed(KEY_EQUAL)) targetSize = Vector2Scale(targetSize, 1.1f);
-        if (IsKeyPressed(KEY_MINUS)) targetSize = Vector2Scale(targetSize, 0.9f);
+        targetSize = Vector2Scale(targetSize, GetMouseWheelMove() * 0.1f + 1);
         Vector2 currentSize = { GetScreenWidth(), GetScreenHeight() };
         currentSize = Vector2Lerp(currentSize, targetSize, GetFrameTime() * 10);
         SetWindowSize(currentSize.x, currentSize.y);
