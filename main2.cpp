@@ -4,13 +4,15 @@
 
 void main()
 {
-    Vector2 targetPosition;
-    int width = 640;
-    int height = 480;
+    const int width = 640;
+    const int height = 480;
 
     SetTargetFPS(60);
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT);
     InitWindow(height, height, "test");
+
+    Vector2 targetPosition = GetWindowPosition();
+    Vector2 targetSize { GetScreenWidth(), GetScreenHeight() };
     
     if (setupESCAPI() < 1)
     {
@@ -54,6 +56,12 @@ void main()
         Vector2 currentPosition = GetWindowPosition();
         currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
         SetWindowPosition(currentPosition.x, currentPosition.y);
+
+        if (IsKeyPressed(KEY_EQUAL)) targetSize = Vector2Scale(targetSize, 1.1f);
+        if (IsKeyPressed(KEY_MINUS)) targetSize = Vector2Scale(targetSize, 0.9f);
+        Vector2 currentSize = { GetScreenWidth(), GetScreenHeight() };
+        currentSize = Vector2Lerp(currentSize, targetSize, GetFrameTime() * 10);
+        SetWindowSize(currentSize.x, currentSize.y);
         
         float fSize = (float)GetScreenWidth();
         SetShaderValue(shader, sizeLoc, &fSize, SHADER_UNIFORM_FLOAT);
@@ -61,7 +69,7 @@ void main()
         BeginDrawing();
         ClearBackground(BLANK);
         BeginShaderMode(shader);
-        DrawTexture(texture, 0, 0, WHITE);
+        DrawTextureEx(texture, {}, 0, currentSize.y / height, WHITE);
         EndShaderMode();
         EndDrawing();
 
