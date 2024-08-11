@@ -14,58 +14,52 @@ setCapturePropertyProc setCaptureProperty;
 getCaptureErrorLineProc getCaptureErrorLine;
 getCaptureErrorCodeProc getCaptureErrorCode;
 
-
 /* Internal: initialize COM */
 typedef void (*initCOMProc)();
 initCOMProc initCOM;
 
 int setupESCAPI()
 {
-  /* Load DLL dynamically */
-  HMODULE capdll = LoadLibraryA("escapi.dll");
-  if (capdll == NULL)
-    return 0;
+    /* Load DLL dynamically */
+    HMODULE capdll = LoadLibraryA("escapi.dll");
+    if (capdll == NULL) return 0;
 
-  /* Fetch function entry points */
-  countCaptureDevices = (countCaptureDevicesProc)GetProcAddress(capdll, "countCaptureDevices");
-  initCapture = (initCaptureProc)GetProcAddress(capdll, "initCapture");
-  deinitCapture = (deinitCaptureProc)GetProcAddress(capdll, "deinitCapture");
-  doCapture = (doCaptureProc)GetProcAddress(capdll, "doCapture");
-  isCaptureDone = (isCaptureDoneProc)GetProcAddress(capdll, "isCaptureDone");
-  initCOM = (initCOMProc)GetProcAddress(capdll, "initCOM");
-  getCaptureDeviceName = (getCaptureDeviceNameProc)GetProcAddress(capdll, "getCaptureDeviceName");
-  ESCAPIVersion = (ESCAPIVersionProc)GetProcAddress(capdll, "ESCAPIVersion");
-  getCapturePropertyValue = (getCapturePropertyValueProc)GetProcAddress(capdll, "getCapturePropertyValue");
-  getCapturePropertyAuto = (getCapturePropertyAutoProc)GetProcAddress(capdll, "getCapturePropertyAuto");
-  setCaptureProperty = (setCapturePropertyProc)GetProcAddress(capdll, "setCaptureProperty");
-  getCaptureErrorLine = (getCaptureErrorLineProc)GetProcAddress(capdll, "getCaptureErrorLine");
-  getCaptureErrorCode = (getCaptureErrorCodeProc)GetProcAddress(capdll, "getCaptureErrorCode");
+    /* Fetch function entry points */
+    countCaptureDevices = (countCaptureDevicesProc)GetProcAddress(capdll, "countCaptureDevices");
+    initCapture = (initCaptureProc)GetProcAddress(capdll, "initCapture");
+    deinitCapture = (deinitCaptureProc)GetProcAddress(capdll, "deinitCapture");
+    doCapture = (doCaptureProc)GetProcAddress(capdll, "doCapture");
+    isCaptureDone = (isCaptureDoneProc)GetProcAddress(capdll, "isCaptureDone");
+    initCOM = (initCOMProc)GetProcAddress(capdll, "initCOM");
+    getCaptureDeviceName = (getCaptureDeviceNameProc)GetProcAddress(capdll, "getCaptureDeviceName");
+    ESCAPIVersion = (ESCAPIVersionProc)GetProcAddress(capdll, "ESCAPIVersion");
+    getCapturePropertyValue = (getCapturePropertyValueProc)GetProcAddress(capdll, "getCapturePropertyValue");
+    getCapturePropertyAuto = (getCapturePropertyAutoProc)GetProcAddress(capdll, "getCapturePropertyAuto");
+    setCaptureProperty = (setCapturePropertyProc)GetProcAddress(capdll, "setCaptureProperty");
+    getCaptureErrorLine = (getCaptureErrorLineProc)GetProcAddress(capdll, "getCaptureErrorLine");
+    getCaptureErrorCode = (getCaptureErrorCodeProc)GetProcAddress(capdll, "getCaptureErrorCode");
 
+    /* Check that we got all the entry points */
+    if (initCOM == NULL) return 0;
+    if (ESCAPIVersion == NULL) return 0;
+    if (getCaptureDeviceName == NULL) return 0;
+    if (countCaptureDevices == NULL) return 0;
+    if (initCapture == NULL) return 0;
+    if (deinitCapture == NULL) return 0;
+    if (doCapture == NULL) return 0;
+    if (isCaptureDone == NULL) return 0;
+    if (getCapturePropertyValue == NULL) return 0;
+    if (getCapturePropertyAuto == NULL) return 0;
+    if (setCaptureProperty == NULL) return 0;
+    if (getCaptureErrorLine == NULL) return 0;
+    if (getCaptureErrorCode == NULL) return 0;
 
-  /* Check that we got all the entry points */
-  if (initCOM == NULL ||
-      ESCAPIVersion == NULL ||
-      getCaptureDeviceName == NULL ||
-      countCaptureDevices == NULL ||
-      initCapture == NULL ||
-      deinitCapture == NULL ||
-      doCapture == NULL ||
-      isCaptureDone == NULL ||
-	  getCapturePropertyValue == NULL ||
-	  getCapturePropertyAuto == NULL ||
-	  setCaptureProperty == NULL ||
-	  getCaptureErrorLine == NULL ||
-	  getCaptureErrorCode == NULL)
-      return 0;
+    /* Verify DLL version is at least what we want */
+    if (ESCAPIVersion() < 0x300) return 0;
 
-  /* Verify DLL version is at least what we want */
-  if (ESCAPIVersion() < 0x300)
-    return 0;
+    /* Initialize COM.. */
+    initCOM();
 
-  /* Initialize COM.. */
-  initCOM();
-
-  /* and return the number of capture devices found. */
-  return countCaptureDevices();
+    /* and return the number of capture devices found. */
+    return countCaptureDevices();
 }
-
