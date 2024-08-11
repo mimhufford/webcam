@@ -6,9 +6,8 @@ void main()
     int width = 640;
     int height = 480;
 
-    SetTargetFPS(10); 
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT);
-    InitWindow(width, height, "test");
+    InitWindow(height, height, "test");
     
     if (setupESCAPI() < 1)
     {
@@ -22,6 +21,14 @@ void main()
     capture.mHeight = height;
     capture.mTargetBuf = new int[width * height];
 
+    // Begin capture
+    initCapture(0, &capture);
+    doCapture(0);
+
+    // Load the transparent circle shader
+    Shader shader = LoadShader(0, "shader.fs");
+    auto sizeLoc = GetShaderLocation(shader, "size");
+
     // @TODO: Need to convert from ABGR to RBGA, so just swizzling for now
     //        There's probably a way to ask escapi for a certain pixel format
     char *swizzled = new char[width * height * 3];
@@ -33,17 +40,19 @@ void main()
     image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8;
     image.mipmaps = 1;
 
-    // Begin capture
-    initCapture(0, &capture);
-    doCapture(0);
-
     Texture2D texture = LoadTextureFromImage(image);
 
     while (!WindowShouldClose())
     {
+        float fSize = (float)GetScreenWidth();
+        SetShaderValue(shader, sizeLoc, &fSize, SHADER_UNIFORM_FLOAT);
+
         BeginDrawing();
-        ClearBackground(MAGENTA);
+        ClearBackground(BLANK);
+        BeginShaderMode(shader);
         DrawTexture(texture, 0, 0, WHITE);
+        EndShaderMode();
+        DrawFPS(30, 30);
         EndDrawing();
 
         // Poll webcam
@@ -62,5 +71,8 @@ void main()
             doCapture(0);
         }
     }
+
+    UnloadShader(shader);
+    UnloadTexture(texture);
     CloseWindow();
 }
