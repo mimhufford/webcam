@@ -23,13 +23,13 @@ void main()
 
     // @TODO: Need to convert from ABGR to RBGA, so just swizzling for now
     //        There's probably a way to ask escapi for a certain pixel format
-    int *swizzled = new int[width * height];
+    char *swizzled = new char[width * height * 3];
 
     Image image;
     image.data = swizzled;
     image.width = width;
     image.height = height;
-    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8;
     image.mipmaps = 1;
 
     // Begin capture
@@ -52,10 +52,9 @@ void main()
             for (int i = 0; i < width * height; i++)
             {
                 int raw = capture.mTargetBuf[i];
-                int b = (raw >>  0) & 0xFF;
-                int g = (raw >>  8) & 0xFF;
-                int r = (raw >> 16) & 0xFF;
-                swizzled[i] = 0xFF << 24 | b << 16 | g << 8 | r;
+                swizzled[i * 3 + 0] = (raw >> 16) & 0xFF;
+                swizzled[i * 3 + 1] = (raw >>  8) & 0xFF;
+                swizzled[i * 3 + 2] = (raw >>  0) & 0xFF;
             }
 
             UpdateTexture(texture, swizzled);
