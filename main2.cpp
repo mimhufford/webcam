@@ -21,11 +21,15 @@ void main()
     capture.mHeight = height;
     capture.mTargetBuf = new int[width * height];
 
+    // @TODO: Need to convert from ABGR to RBGA, so just swizzling for now
+    //        There's probably a way to ask escapi for a certain pixel format
+    int *swizzled = new int[width * height];
+
     Image image;
-    image.data = capture.mTargetBuf;
+    image.data = swizzled;
     image.width = width;
     image.height = height;
-    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8;
+    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
     image.mipmaps = 1;
 
     // Begin capture
@@ -37,14 +41,24 @@ void main()
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(RED);
+        ClearBackground(MAGENTA);
         DrawTexture(texture, 0, 0, WHITE);
         EndDrawing();
 
         // Poll webcam
         if (isCaptureDone(0))
         {
-            UpdateTexture(texture, capture.mTargetBuf);
+            // Swizzle, hopefully get rid of this
+            for (int i = 0; i < width * height; i++)
+            {
+                int raw = capture.mTargetBuf[i];
+                int b = (raw >>  0) & 0xFF;
+                int g = (raw >>  8) & 0xFF;
+                int r = (raw >> 16) & 0xFF;
+                swizzled[i] = 0xFF << 24 | b << 16 | g << 8 | r;
+            }
+
+            UpdateTexture(texture, swizzled);
             doCapture(0);
         }
     }
