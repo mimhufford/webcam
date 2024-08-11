@@ -8,7 +8,7 @@ void main()
     const int height = 480;
 
     SetTargetFPS(60);
-    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT);
+    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT);
     InitWindow(height, height, "test");
 
     Vector2 targetPosition = GetWindowPosition();
