@@ -8,6 +8,7 @@ cl main.cpp escapi.cpp ^
 cl main2.cpp escapi.cpp ^
    /nologo ^
    /I raylib/include ^
+   /O2 ^
    /MD ^
    /link ^
    /LIBPATH:raylib/lib raylib.lib shell32.lib user32.lib gdi32.lib winmm.lib ^

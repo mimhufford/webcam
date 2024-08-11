@@ -6,7 +6,8 @@ void main()
     int width = 640;
     int height = 480;
 
-    SetTargetFPS(10);
+    SetTargetFPS(10); 
+    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT);
     InitWindow(width, height, "test");
     
     if (setupESCAPI() < 1)
