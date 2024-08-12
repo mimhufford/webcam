@@ -50,10 +50,17 @@ void main()
 
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed(KEY_LEFT))  targetPosition.x = 0;
-        if (IsKeyPressed(KEY_RIGHT)) targetPosition.x = GetMonitorWidth(0) - GetRenderWidth();
-        if (IsKeyPressed(KEY_UP))    targetPosition.y = 0;
-        if (IsKeyPressed(KEY_DOWN))  targetPosition.y = GetMonitorHeight(0) - GetRenderHeight();
+        if (IsKeyDown(KEY_LEFT_CONTROL)) {
+            if (IsKeyPressed(KEY_LEFT))  targetPosition.x -= 25;
+            if (IsKeyPressed(KEY_RIGHT)) targetPosition.x += 25;
+            if (IsKeyPressed(KEY_UP))    targetPosition.y -= 25;
+            if (IsKeyPressed(KEY_DOWN))  targetPosition.y += 25;
+        } else {
+            if (IsKeyPressed(KEY_LEFT))  targetPosition.x = 0;
+            if (IsKeyPressed(KEY_RIGHT)) targetPosition.x = GetMonitorWidth(0) - GetRenderWidth();
+            if (IsKeyPressed(KEY_UP))    targetPosition.y = 0;
+            if (IsKeyPressed(KEY_DOWN))  targetPosition.y = GetMonitorHeight(0) - GetRenderHeight();
+        }
         Vector2 currentPosition = GetWindowPosition();
         currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
         SetWindowPosition(currentPosition.x, currentPosition.y);
