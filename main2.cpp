@@ -34,15 +34,11 @@ void main()
     Shader shader = LoadShader(0, "shader.fs");
     auto sizeLoc = GetShaderLocation(shader, "size");
 
-    // @TODO: Need to convert from ABGR to RBGA, so just swizzling for now
-    //        There's probably a way to ask escapi for a certain pixel format
-    char *swizzled = new char[width * height * 3];
-
     Image image;
-    image.data = swizzled;
+    image.data = capture.mTargetBuf;
     image.width = width;
     image.height = height;
-    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8;
+    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
     image.mipmaps = 1;
 
     Texture2D texture = LoadTextureFromImage(image);
@@ -84,16 +80,14 @@ void main()
         // Poll webcam
         if (isCaptureDone(0))
         {
-            // Swizzle, hopefully get rid of this
             for (int i = 0; i < width * height; i++)
             {
-                int raw = capture.mTargetBuf[i];
-                swizzled[i * 3 + 0] = (raw >> 16) & 0xFF;
-                swizzled[i * 3 + 1] = (raw >>  8) & 0xFF;
-                swizzled[i * 3 + 2] = (raw >>  0) & 0xFF;
+                // Swizzle pixel data
+                int p = capture.mTargetBuf[i];
+                capture.mTargetBuf[i] = 0xFF000000 | (p & 0xFF) << 16 | (p >> 8 & 0xFF) << 8 | p >> 16 & 0xFF;
             }
 
-            UpdateTexture(texture, swizzled);
+            UpdateTexture(texture, capture.mTargetBuf);
             doCapture(0);
         }
     }
