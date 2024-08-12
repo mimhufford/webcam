@@ -13,7 +13,7 @@ void main()
 
     Vector2 targetPosition = GetWindowPosition();
     Vector2 targetSize { height, height };
-    
+
     if (setupESCAPI() < 1)
     {
         TraceLog(LOG_ERROR, "Unable to init ESCAPI");
@@ -34,29 +34,22 @@ void main()
     Shader shader = LoadShader(0, "shader.fs");
     auto sizeLoc = GetShaderLocation(shader, "size");
 
-    Image image;
-    image.data = capture.mTargetBuf;
-    image.width = width;
-    image.height = height;
-    image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
-    image.mipmaps = 1;
-
+    // Set up the GPU texture format
+    Image image = {nullptr, width, height, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
     Texture2D texture = LoadTextureFromImage(image);
     SetTextureFilter(texture, TEXTURE_FILTER_BILINEAR);
 
     while (!WindowShouldClose())
     {
-        if (IsKeyDown(KEY_LEFT_CONTROL)) {
-            if (IsKeyPressed(KEY_LEFT))  targetPosition.x -= 25;
-            if (IsKeyPressed(KEY_RIGHT)) targetPosition.x += 25;
-            if (IsKeyPressed(KEY_UP))    targetPosition.y -= 25;
-            if (IsKeyPressed(KEY_DOWN))  targetPosition.y += 25;
-        } else {
-            if (IsKeyPressed(KEY_LEFT))  targetPosition.x = 0;
-            if (IsKeyPressed(KEY_RIGHT)) targetPosition.x = GetMonitorWidth(0) - GetRenderWidth();
-            if (IsKeyPressed(KEY_UP))    targetPosition.y = 0;
-            if (IsKeyPressed(KEY_DOWN))  targetPosition.y = GetMonitorHeight(0) - GetRenderHeight();
-        }
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT))  targetPosition.x -= 25;
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_RIGHT)) targetPosition.x += 25;
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_UP))    targetPosition.y -= 25;
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_DOWN))  targetPosition.y += 25;
+        if (IsKeyUp(KEY_LEFT_CONTROL)   && IsKeyPressed(KEY_LEFT))  targetPosition.x = 0;
+        if (IsKeyUp(KEY_LEFT_CONTROL)   && IsKeyPressed(KEY_RIGHT)) targetPosition.x = GetMonitorWidth(0) - GetRenderWidth();
+        if (IsKeyUp(KEY_LEFT_CONTROL)   && IsKeyPressed(KEY_UP))    targetPosition.y = 0;
+        if (IsKeyUp(KEY_LEFT_CONTROL)   && IsKeyPressed(KEY_DOWN))  targetPosition.y = GetMonitorHeight(0) - GetRenderHeight();
+
         Vector2 currentPosition = GetWindowPosition();
         currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
         SetWindowPosition(currentPosition.x, currentPosition.y);
@@ -66,9 +59,8 @@ void main()
         Vector2 currentSize = { GetScreenWidth(), GetScreenHeight() };
         currentSize = Vector2Lerp(currentSize, targetSize, GetFrameTime() * 10);
         SetWindowSize(currentSize.x, currentSize.y);
-        
-        float fSize = (float)GetScreenWidth();
-        SetShaderValue(shader, sizeLoc, &fSize, SHADER_UNIFORM_FLOAT);
+
+        SetShaderValue(shader, sizeLoc, &currentSize.x, SHADER_UNIFORM_FLOAT);
 
         BeginDrawing();
         ClearBackground(BLANK);
