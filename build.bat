@@ -11,4 +11,6 @@ cl main2.cpp escapi.cpp ^
    /O2 ^
    /MD ^
    /link ^
+   /SUBSYSTEM:WINDOWS ^
+   /ENTRY:"mainCRTStartup" ^
    /LIBPATH:raylib/lib raylib.lib shell32.lib user32.lib gdi32.lib winmm.lib ^
