@@ -12,7 +12,7 @@ void main()
     InitWindow(height, height, "test");
 
     Vector2 targetPosition = GetWindowPosition();
-    Vector2 targetSize { GetScreenWidth(), GetScreenHeight() };
+    Vector2 targetSize { height, height };
     
     if (setupESCAPI() < 1)
     {
@@ -58,6 +58,7 @@ void main()
         currentPosition = Vector2Lerp(currentPosition, targetPosition, GetFrameTime() * 10);
         SetWindowPosition(currentPosition.x, currentPosition.y);
 
+        if (IsKeyPressed(KEY_R)) targetSize = { height, height };
         targetSize = Vector2Scale(targetSize, GetMouseWheelMove() * 0.1f + 1);
         Vector2 currentSize = { GetScreenWidth(), GetScreenHeight() };
         currentSize = Vector2Lerp(currentSize, targetSize, GetFrameTime() * 10);
